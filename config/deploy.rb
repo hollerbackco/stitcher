@@ -15,6 +15,7 @@ set :domain, 'ec2-50-17-96-51.compute-1.amazonaws.com'
 set :deploy_to, '/home/ec2-user/stitcher-service'
 set :repository, 'git@github.com:jnoh/hollerback-stitcher.git'
 set :branch, 'master'
+set :forward_agent, true
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
