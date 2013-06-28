@@ -12,7 +12,7 @@ require 'mina/git'
 
 set :user, 'ec2-user'
 set :domain, 'ec2-50-17-96-51.compute-1.amazonaws.com'
-set :deploy_to, '~/stitcher-service'
+set :deploy_to, '/home/ec2-user/stitcher-service'
 set :repository, 'git@github.com:jnoh/hollerback-stitcher.git'
 set :branch, 'master'
 
@@ -55,7 +55,7 @@ task :deploy => :environment do
     # Put things that will set up an empty directory into a fully set-up
     # instance of your project.
     invoke :'git:clone'
-    invoke :'deploy:link_shared_paths'
+    #invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
     #invoke :'rails:db_migrate'
     #invoke :'rails:assets_precompile'
