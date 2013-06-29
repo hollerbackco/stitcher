@@ -33,7 +33,7 @@ task :environment do
   # invoke :'rbenv:load'
 
   # For those using RVM, use this to load an RVM version@gemset.
-  # invoke :'rvm:use[ruby-1.9.3-p125@default]'
+   invoke :'rvm:use[ruby-2.0.0@default]'
 end
 
 # Put any custom mkdir's in here for when `mina setup` is ran.
@@ -48,7 +48,7 @@ task :setup => :environment do
 
   queue! %[touch "#{deploy_to}/shared/config/database.yml"]
   queue! %[gem install bundler]
-  queue  %[-----> Be sure to edit 'shared/config/database.yml'.]
+  #queue  %[-----> Be sure to edit 'shared/config/database.yml'.]
 end
 
 desc "Deploys the current version to the server."

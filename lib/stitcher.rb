@@ -10,6 +10,7 @@ class Stitcher
 
     command << " #{output}"
 
+    p command 
     system command
 
     output

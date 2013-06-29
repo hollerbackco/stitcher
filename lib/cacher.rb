@@ -1,7 +1,7 @@
 class Cacher
   def get(urls=[])
     Dir.mktmpdir do |dir|
-     files = urls.map do |url|
+      files = urls.map do |url|
         filename = generate_random_filename(dir, url)
         get_file_from_url url, filename
       end
