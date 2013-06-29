@@ -1,6 +1,6 @@
 require 'bundler'
-Dir[File.dirname(__FILE__) + "/lib/**/*.rb"].each {|f| require f}
 Bundler.require
+Dir[File.dirname(__FILE__) + "/lib/**/*.rb"].each {|f| require f}
 
 # configuration
 CONFIG = YAML.load_file("./config/aws.yml")
