@@ -64,6 +64,7 @@ task :deploy => :environment do
 
     to :launch do
       queue 'touch tmp/restart.txt'
+      queue 'foreman export upstart /etc/init'
     end
   end
 end
