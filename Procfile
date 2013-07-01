@@ -1,1 +1,1 @@
-worker:    bundle exec ruby service.rb
+worker:    bootup_bundle exec ruby service.rb
