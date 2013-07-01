@@ -59,12 +59,10 @@ task :deploy => :environment do
     invoke :'git:clone'
     #invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
-    #invoke :'rails:db_migrate'
-    #invoke :'rails:assets_precompile'
 
     to :launch do
       queue 'touch tmp/restart.txt'
-      queue 'foreman export upstart /etc/init'
+      queue 'rvmsudo foreman export upstart /etc/init -c worker=3'
     end
   end
 end
