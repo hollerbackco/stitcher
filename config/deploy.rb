@@ -48,7 +48,7 @@ task :setup => :environment do
   queue! %[chmod g+rx,u+rwx "#{deploy_to}/shared/config"]
 
   queue! %[touch "#{deploy_to}/shared/config/database.yml"]
-  queue! %[gem install bundler]
+  queue! %[rvmsudo gem install bundler]
   #queue  %[-----> Be sure to edit 'shared/config/database.yml'.]
 end
 
@@ -63,7 +63,7 @@ task :deploy => :environment do
 
     to :launch do
       queue 'touch tmp/restart.txt'
-      queue 'rvmsudo foreman export upstart /etc/init -c worker=3'
+      queue 'rvmsudo foreman export upstart /etc/init --user ubuntu -c worker=3'
     end
   end
 end
