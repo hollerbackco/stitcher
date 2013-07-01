@@ -10,9 +10,9 @@ require 'mina/git'
 #   repository   - Git repo to clone from. (needed by mina/git)
 #   branch       - Branch name to deploy. (needed by mina/git)
 
-set :user, 'ec2-user'
-set :domain, 'ec2-50-17-96-51.compute-1.amazonaws.com'
-set :deploy_to, '/home/ec2-user/stitcher-service'
+set :user, 'ubuntu'
+set :domain, 'ec2-54-242-215-39.compute-1.amazonaws.com'
+set :deploy_to, '/home/ubuntu/stitcher-service'
 set :repository, 'git@github.com:jnoh/hollerback-stitcher.git'
 set :branch, 'master'
 set :forward_agent, true
