@@ -16,6 +16,7 @@ set :deploy_to, '/home/ubuntu/stitcher-service'
 set :repository, 'git@github.com:jnoh/hollerback-stitcher.git'
 set :branch, 'master'
 set :forward_agent, true
+set :rvm_path, '/usr/local/rvm'
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
