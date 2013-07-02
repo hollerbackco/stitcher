@@ -13,7 +13,7 @@ class StitcherService
       data = JSON.parse(message.body)
 
       parts = data["parts"]
-      output = data["output"]
+      output = "#{data["output"]}.mp4"
       video_id  = data["video_id"]
 
       stitch(parts, output, video_id)
