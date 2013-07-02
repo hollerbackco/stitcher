@@ -1,6 +1,13 @@
 ---
-AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
-AWS_SECRET_ACCESS_KEY: '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'
-STITCH_QUEUE: "video-stitch"
-FINISH_QUEUE: "video-stitch-ready"
-BUCKET: "hollerback-app-dev"
+production:
+  AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
+  AWS_SECRET_ACCESS_KEY: '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'
+  STITCH_QUEUE: "video-stitch"
+  FINISH_QUEUE: "video-stitch-ready"
+  BUCKET: "hollerback-app-dev"
+development:
+  AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
+  AWS_SECRET_ACCESS_KEY: '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'
+  STITCH_QUEUE: "video-stitch-dev"
+  FINISH_QUEUE: "video-stitch-ready-dev"
+  BUCKET: "hollerback-app-dev"
