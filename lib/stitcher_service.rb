@@ -24,7 +24,7 @@ class StitcherService
     Cacher.new.get(parts) do |files, tmpdir|
       s3_output = bucket.objects[output]
 
-      local_output = "#{tmpdir}/#{output}"
+      local_output = "#{tmpdir}/#{File.basename(output)}"
       Stitcher.stitch(files.map(&:path), local_output)
       Uploader.upload_to_s3(local_output, s3_output)
       notify_done(output, video_id)
