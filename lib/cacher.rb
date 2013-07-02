@@ -11,6 +11,7 @@ class Cacher
   end
 
   def get_file_from_url(url_string, filename)
+    puts url_string
     file = nil
     url = URI.parse(url_string)
 
