@@ -2,7 +2,7 @@ class Cacher
   def get(urls=[])
     Dir.mktmpdir do |dir|
       files = urls.map do |url|
-        filename = generate_random_filename(dir, url)
+        filename = generate_random_filename(dir)
         get_file_from_url url, filename
       end
 
@@ -33,8 +33,7 @@ class Cacher
 
   private
 
-  def generate_random_filename(dir, url)
-    ext = File.extname(url)
-    File.join(dir, "#{SecureRandom.hex}.#{ext}")
+  def generate_random_filename(dir)
+    File.join(dir, "#{SecureRandom.hex}.mp4")
   end
 end
