@@ -8,6 +8,7 @@ class Stitcher
       command << " -cat #{file}"
     end
 
+    command << " -tmp #{File.dirname(output)}"
     command << " #{output}"
 
     p command
