@@ -2,7 +2,7 @@ class Stitcher
   def self.stitch(files=[], output)
     raise if files.empty?
 
-    command = "MP4Box -force-cat -hint"
+    command = "MP4Box -force-cat "
 
     files.each do |file|
       command << " -cat #{file}"
