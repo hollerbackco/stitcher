@@ -26,8 +26,8 @@ class StitcherService
 
   def process(parts, output, video_id)
     Cacher.new.get(parts) do |files, tmpdir|
-      video = process_video(files, "#{output}.mp4")
-      process_thumb(video, "#{output}-thumb.png")
+      video = process_video(files, "#{output}.mp4", tmpdir)
+      process_thumb(video, "#{output}-thumb.png", tmpdir)
       notify_done("#{output}.mp4", video_id)
     end
   rescue
@@ -40,7 +40,7 @@ class StitcherService
     finish_queue.send_message({output: output, video_id: video_id}.to_json)
   end
 
-  def process_video(files, output_file)
+  def process_video(files, output_file, tmpdir)
     #local output file
     local_output_file = "#{tmpdir}/#{File.basename output_file}"
     #s3 output file
@@ -52,7 +52,7 @@ class StitcherService
     local_output_file
   end
 
-  def make_thumb(video, filename)
+  def make_thumb(video, filename, tmpdir)
     #local output file
     local_output_file = "#{tmpdir}/#{File.basename filename}"
 
