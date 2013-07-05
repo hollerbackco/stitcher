@@ -52,7 +52,7 @@ class StitcherService
     local_output_file
   end
 
-  def make_thumb(video, filename, tmpdir)
+  def process_thumb(video, filename, tmpdir)
     #local output file
     local_output_file = "#{tmpdir}/#{File.basename filename}"
 
