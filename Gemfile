@@ -6,3 +6,5 @@ gem "guard"
 gem "guard-rspec"
 gem "foreman"
 gem "json"
+gem 'mini_magick'
+gem 'streamio-ffmpeg'

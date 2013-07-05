@@ -1,6 +1,7 @@
 require 'bundler'
 Bundler.require
-Dir[File.dirname(__FILE__) + "/lib/**/*.rb"].each {|f| require f}
+
+require './lib/stitcher_service'
 
 env = ENV["SERVICE_ENV"] || "production"
 
