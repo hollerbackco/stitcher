@@ -20,7 +20,7 @@ class Movie
   end
 
   def screengrab(output_file)
-    ffmpeg_video.screenshot(output_file)
+    ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=1\"")
     image = ::MiniMagick::Image.new(output_file)
     image.resize "90x90"
     output_file
