@@ -5,6 +5,10 @@ require 'stitcher_service/uploader'
 class StitcherService
   attr_reader :jobs_queue, :finish_queue, :bucket
 
+  def self.logger
+    @logger ||= self.create_logger
+  end
+
   # receives to queues
   def initialize(jobs_queue, output_queue, bucket)
     @jobs_queue   = jobs_queue
@@ -35,6 +39,12 @@ class StitcherService
   end
 
   private
+
+  def self.create_logger
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::INFO
+    logger
+  end
 
   def notify_done(output, video_id)
     finish_queue.send_message({output: output, video_id: video_id}.to_json)

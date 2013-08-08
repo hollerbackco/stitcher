@@ -3,6 +3,8 @@ Bundler.require
 
 require './lib/stitcher_service'
 
+$stdout.sync = true
+
 env = ENV["SERVICE_ENV"] || "production"
 
 # configuration
