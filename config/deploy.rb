@@ -2,7 +2,8 @@ require 'mina/bundler'
 require 'mina/rails'
 require 'mina/git'
 # require 'mina/rbenv'  # for rbenv support. (http://rbenv.org)
- require 'mina/rvm'    # for rvm support. (http://rvm.io)
+require 'mina/foreman'
+require 'mina/rvm'    # for rvm support. (http://rvm.io)
 
 # Basic settings:
 #   domain       - The hostname to SSH to.
@@ -55,17 +56,15 @@ end
 desc "Deploys the current version to the server."
 task :deploy => :environment do
   deploy do
-    # Put things that will set up an empty directory into a fully set-up
-    # instance of your project.
     invoke :'git:clone'
-    #invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
 
-    to :launch do
-      queue 'touch tmp/restart.txt'
-      queue 'rvmsudo foreman export upstart /etc/init --user ubuntu -c worker=3,dev_worker=1'
-      queue 'sudo restart app'
-    end
+    queue 'touch tmp/restart.txt'
+    queue 'rvmsudo foreman export upstart /etc/init --user ubuntu -c worker=3,dev_worker=1'
+  end
+
+  to :launch do
+    invoke 'foreman:restart'
   end
 end
 
