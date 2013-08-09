@@ -26,4 +26,13 @@ describe Movie do
       File.exist?(thumb).should be_true
     end
   end
+
+  it "should take a blurred screengrab" do
+    file = Dir.glob(File.dirname(__FILE__) + '/../../fixtures/chunks/*.mp4').first
+    Dir.mktmpdir do |dir|
+      movie = Movie.new(file)
+      thumb = movie.blurred_screengrab("#{dir}/test.png")
+      File.exist?(thumb).should be_true
+    end
+  end
 end
