@@ -59,13 +59,13 @@ task :deploy => :environment do
     invoke :'git:clone'
     invoke :'bundle:install'
 
-    queue 'touch tmp/restart.txt'
-    queue 'rvmsudo foreman export upstart /etc/init --user ubuntu -c worker=3,dev_worker=1'
+    to :launch do
+      queue 'touch tmp/restart.txt'
+      queue 'rvmsudo foreman export upstart /etc/init --user ubuntu -c worker=3,dev_worker=1'
+      invoke 'foreman:restart'
+    end
   end
 
-  to :launch do
-    invoke 'foreman:restart'
-  end
 end
 
 # For help in making your deploy script, see the Mina documentation:

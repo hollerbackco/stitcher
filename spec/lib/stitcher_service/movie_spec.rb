@@ -22,7 +22,7 @@ describe Movie do
     file = Dir.glob(File.dirname(__FILE__) + '/../../fixtures/chunks/*.mp4').first
     Dir.mktmpdir do |dir|
       movie = Movie.new(file)
-      thumb = movie.screengrab("#{tmp}/test.png")
+      thumb = movie.screengrab("#{dir}/test.png")
       File.exist?(thumb).should be_true
     end
   end
