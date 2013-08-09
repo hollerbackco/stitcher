@@ -1,6 +1,6 @@
-require 'stitcher_service/movie'
-require 'stitcher_service/cacher'
-require 'stitcher_service/uploader'
+require './stitcher_service/movie'
+require './stitcher_service/cacher'
+require './stitcher_service/uploader'
 
 class StitcherService
   attr_reader :jobs_queue, :finish_queue, :bucket
