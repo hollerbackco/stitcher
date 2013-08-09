@@ -32,14 +32,17 @@ class Movie
     ffmpeg_video.screenshot(output_file)
     image = ::MiniMagick::Image.new(output_file)
     #image.gaussian_blur "0x5"
-    image.modulate "100,120"
-    image.resize "90x90"
-    output_file
+    image.combine_options do |cmd|
+      cmd.auto_gamma
+      cmd.modulate '100,120'
+    end
   end
+  output_file
+end
 
-  private
+private
 
-  def ffmpeg_video
-    @ffmpeg_video ||= ::FFMPEG::Movie.new(@file)
-  end
+def ffmpeg_video
+  @ffmpeg_video ||= ::FFMPEG::Movie.new(@file)
+end
 end
