@@ -11,6 +11,7 @@ require 'mina/rvm'    # for rvm support. (http://rvm.io)
 #   repository   - Git repo to clone from. (needed by mina/git)
 #   branch       - Branch name to deploy. (needed by mina/git)
 
+set :application, 'app'
 set :user, 'ubuntu'
 set :domain, 'ec2-54-242-215-39.compute-1.amazonaws.com'
 set :deploy_to, '/home/ubuntu/stitcher-service'
