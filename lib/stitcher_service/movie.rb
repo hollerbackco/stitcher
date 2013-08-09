@@ -31,8 +31,8 @@ class Movie
     #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=1\"")
     ffmpeg_video.screenshot(output_file)
     image = ::MiniMagick::Image.new(output_file)
+    image.gaussian_blur "0x10"
     image.resize "90x90"
-    image.gaussian_blur "0x5"
     output_file
   end
 

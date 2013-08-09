@@ -78,7 +78,7 @@ class StitcherService
     image
   end
 
-  def process_thumb_blurred(video, filename, tmpdir)
+  def process_blurred_thumb(video, filename, tmpdir)
     #local output file
     local_output_file = "#{tmpdir}/#{File.basename filename}"
 
