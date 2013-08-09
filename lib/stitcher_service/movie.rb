@@ -36,13 +36,12 @@ class Movie
       cmd.auto_gamma
       cmd.modulate '100,120'
     end
+    output_file
   end
-  output_file
-end
 
-private
+  private
 
-def ffmpeg_video
-  @ffmpeg_video ||= ::FFMPEG::Movie.new(@file)
-end
+  def ffmpeg_video
+    @ffmpeg_video ||= ::FFMPEG::Movie.new(@file)
+  end
 end
