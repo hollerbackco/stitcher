@@ -22,6 +22,8 @@ class StitcherService
 
   def run
     jobs_queue.poll do |message|
+      p message.approximate_receive_count
+      p MAX_RETRIES
       if message.approximate_receive_count < MAX_RETRIES
         data = JSON.parse(message.body)
 
