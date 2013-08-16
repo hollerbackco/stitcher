@@ -21,7 +21,7 @@ class StitcherService
   end
 
   def run
-    jobs_queue.poll do |message|
+    jobs_queue.poll(attributes: :all) do |message|
       p message
       p message.attributes
       p MAX_RETRIES
