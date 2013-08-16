@@ -1,7 +1,7 @@
 require 'bundler'
 Bundler.require
 
-CONFIG = YAML.load_file("./config/aws.yml")
+CONFIG = YAML.load_file("./config/aws.yml")["test"]
 
 AWS.config(access_key_id: CONFIG["AWS_ACCESS_KEY_ID"],
            secret_access_key: CONFIG["AWS_SECRET_ACCESS_KEY"])

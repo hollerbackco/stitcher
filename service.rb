@@ -16,6 +16,7 @@ AWS.config(access_key_id: CONFIG["AWS_ACCESS_KEY_ID"],
 sqs = AWS::SQS.new
 stitch_queue = sqs.queues.create(CONFIG["STITCH_QUEUE"])
 finish_queue = sqs.queues.create(CONFIG["FINISH_QUEUE"])
+error_queue = sqs.queues.create(CONFIG["ERROR_QUEUE"])
 output_bucket = AWS::S3.new.buckets[CONFIG["BUCKET"]]
 
-StitcherService.new(stitch_queue, finish_queue, output_bucket).run
+StitcherService.new(stitch_queue, finish_queue, error_queue, output_bucket).run

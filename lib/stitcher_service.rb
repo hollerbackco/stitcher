@@ -5,28 +5,35 @@ require 'stitcher_service/cacher'
 require 'stitcher_service/uploader'
 
 class StitcherService
-  attr_reader :jobs_queue, :finish_queue, :bucket
+  attr_reader :jobs_queue, :finish_queue, :error_queue, :bucket
+  MAX_RETRIES = 10
 
   def self.logger
     @logger ||= self.create_logger
   end
 
   # receives to queues
-  def initialize(jobs_queue, output_queue, bucket)
+  def initialize(jobs_queue, output_queue, error_queue, bucket)
     @jobs_queue   = jobs_queue
     @finish_queue = output_queue
+    @error_queue = error_queue
     @bucket = bucket
   end
 
   def run
     jobs_queue.poll do |message|
-      data = JSON.parse(message.body)
+      if message.receive_count < MAX_RETRIES
+        data = JSON.parse(message.body)
 
-      parts = data["parts"]
-      output = data["output"]
-      video_id  = data["video_id"]
+        parts = data["parts"]
+        output = data["output"]
+        video_id  = data["video_id"]
 
-      process(parts, output, video_id)
+        process(parts, output, video_id)
+      else
+        #quit trying and put it in the error queue
+        error(message.body)
+      end
     end
   end
 
@@ -47,6 +54,10 @@ class StitcherService
     logger = Logger.new(STDOUT)
     logger.level = Logger::INFO
     logger
+  end
+
+  def error(msg)
+    error_queue.send_message(msg)
   end
 
   def notify_done(output, video_id)
