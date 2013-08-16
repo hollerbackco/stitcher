@@ -22,9 +22,6 @@ class StitcherService
 
   def run
     jobs_queue.poll(attributes: [:all]) do |message|
-      p message
-      p message.attributes
-      p MAX_RETRIES
       if message.approximate_receive_count < MAX_RETRIES
         data = JSON.parse(message.body)
 
@@ -60,7 +57,7 @@ class StitcherService
   end
 
   def error(msg)
-    p "error:"
+    p "failed:"
     p msg
     error_queue.send_message(msg)
   end

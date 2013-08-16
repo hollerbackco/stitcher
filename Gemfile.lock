@@ -22,6 +22,8 @@ GEM
     guard-rspec (3.0.2)
       guard (>= 1.8)
       rspec (~> 2.13)
+    honeybadger (1.8.0)
+      json
     json (1.8.0)
     listen (1.2.2)
       rb-fsevent (>= 0.9.3)
@@ -63,6 +65,7 @@ DEPENDENCIES
   foreman
   guard
   guard-rspec
+  honeybadger
   json
   mini_magick
   rspec

@@ -8,3 +8,4 @@ gem "foreman"
 gem "json"
 gem 'mini_magick'
 gem 'streamio-ffmpeg'
+gem 'honeybadger'
