@@ -27,8 +27,9 @@ begin
   Honeybadger.context({
     environment: env
   })
+
   StitcherService.new(stitch_queue, finish_queue, error_queue, output_bucket).run
 rescue => ex
-  notify_honeybadger(ex)
+  Honeybadger.notify(ex, parameters: StitcherService.params)
   raise
 end

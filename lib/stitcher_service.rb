@@ -9,7 +9,15 @@ class StitcherService
   MAX_RETRIES = 10
 
   def self.logger
-    @logger ||= self.create_logger
+    @@logger ||= self.create_logger
+  end
+
+  def self.params
+    @@params
+  end
+
+  def self.params=(params)
+    @@params = params
   end
 
   # receives to queues
@@ -22,9 +30,10 @@ class StitcherService
 
   def run
     jobs_queue.poll(attributes: [:all]) do |message|
-      if message.approximate_receive_count < MAX_RETRIES
-        data = JSON.parse(message.body)
+      data = JSON.parse(message.body)
+      self.class.params = data
 
+      if message.approximate_receive_count < MAX_RETRIES
         parts = data["parts"]
         output = data["output"]
         video_id  = data["video_id"]
