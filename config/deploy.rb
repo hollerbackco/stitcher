@@ -62,7 +62,7 @@ task :deploy => :environment do
 
     to :launch do
       queue 'touch tmp/restart.txt'
-      queue 'rvmsudo foreman export upstart /etc/init -u ubuntu -l /var/log/app/worker.log -c worker=3,dev_worker=1'
+      queue 'rvmsudo foreman export upstart /etc/init -u ubuntu -c worker=3,dev_worker=1'
       invoke 'foreman:restart'
     end
   end
