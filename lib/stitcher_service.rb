@@ -49,7 +49,7 @@ class StitcherService
   def process(parts, output, video_id)
     Cacher.new.get(parts) do |files, tmpdir|
       video = process_video(files, "#{output}.mp4", tmpdir)
-      process_blurred_thumb(video, "#{output}-thumb.png", tmpdir)
+      process_thumb(video, "#{output}-thumb.png", tmpdir)
       #process_blurred_thumb(video, "#{output}-thumb-blurred.png", tmpdir)
       notify_done("#{output}.mp4", video_id)
     end
