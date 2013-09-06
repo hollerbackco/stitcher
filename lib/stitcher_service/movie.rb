@@ -23,7 +23,9 @@ class Movie
     #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=1\"")
     ffmpeg_video.screenshot(output_file)
     image = ::MiniMagick::Image.new(output_file)
-    image.resize "90x90"
+    image.resize "320x320^"
+    image.gravity "center"
+    image.crop "320x320"
     output_file
   end
 
