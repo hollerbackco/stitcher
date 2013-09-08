@@ -16,22 +16,22 @@ class Worker
   def run
     StitcherService.logger.info "start polling"
     jobs_queue.poll(attributes: [:all]) do |message|
+      StitcherService.logger.info "recieve message"
       if message.approximate_receive_count > MAX_RETRIES
         error(message)
-        return
-      end
+      else
+        data = JSON.parse message.body
+        parts = data["parts"]
+        output = data["output"]
+        video_id = data["video_id"]
 
-      data = JSON.parse message.body
-      parts = data["parts"]
-      output = data["output"]
-      video_id = data["video_id"]
-
-      begin
-        process(parts, output, video_id)
-        notify_done("#{output}.mp4", video_id)
-      rescue => ex
-        Honeybadger.notify(ex, parameters: data)
-        raise
+        begin
+          process(parts, output, video_id)
+          notify_done("#{output}.mp4", video_id)
+        rescue => ex
+          Honeybadger.notify(ex, parameters: data)
+          raise
+        end
       end
     end
   end
