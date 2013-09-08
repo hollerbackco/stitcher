@@ -5,7 +5,7 @@ require './lib/stitcher_service'
 
 $stdout.sync = true
 
-env = ENV["SERVICE_ENV"] || "development"
+env = ENV["SERVICE_ENV"] || "production"
 
 # configuration
 CONFIG = YAML.load_file("./config/aws.yml")[env]
