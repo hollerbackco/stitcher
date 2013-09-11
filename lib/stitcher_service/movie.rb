@@ -25,7 +25,7 @@ class Movie
     image = ::MiniMagick::Image.new(output_file)
     image.resize "320x320^"
     image.gravity "center"
-    image.crop "320x320"
+    image.crop "320x320+0+0"
     output_file
   end
 

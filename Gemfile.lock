@@ -72,5 +72,6 @@ DEPENDENCIES
   honeybadger
   json
   mini_magick
+  pry
   rspec
   streamio-ffmpeg
