@@ -1,5 +1,6 @@
 $:.unshift File.dirname(__FILE__)
 
+require 'syslog/logger'
 require 'stitcher_service/movie'
 require 'stitcher_service/cacher'
 require 'stitcher_service/uploader'
@@ -23,7 +24,7 @@ class StitcherService
   private
 
   def self.create_logger
-    logger = Logger.new(STDOUT)
+    logger = Syslog::Logger.new('my_program')
     logger.level = Logger::INFO
     logger
   end
