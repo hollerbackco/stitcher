@@ -24,7 +24,7 @@ class StitcherService
   private
 
   def self.create_logger
-    logger = Syslog::Logger.new('my_program')
+    logger = Syslog::Logger.new("stitcher")
     logger.level = Logger::INFO
     logger
   end
