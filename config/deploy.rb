@@ -1,7 +1,6 @@
 require 'mina/bundler'
 require 'mina/rails'
 require 'mina/git'
-# require 'mina/rbenv'  # for rbenv support. (http://rbenv.org)
 require 'mina/foreman'
 require 'mina/rvm'    # for rvm support. (http://rvm.io)
 
@@ -13,12 +12,20 @@ require 'mina/rvm'    # for rvm support. (http://rvm.io)
 
 set :application, 'app'
 set :user, 'ubuntu'
-set :domain, 'ec2-54-242-215-39.compute-1.amazonaws.com'
 set :deploy_to, '/home/ubuntu/stitcher-service'
 set :repository, 'git@github.com:jnoh/hollerback-stitcher.git'
 set :branch, 'master'
 set :forward_agent, true
 set :rvm_path, '/usr/local/rvm/scripts/rvm'
+
+case ENV['to']
+when 'staging'
+  set :domain, "staging.example.com"
+  set :service_name, "dev_worker=1"
+else
+  set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
+  set :service_name, "worker=1"
+end
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
@@ -61,12 +68,11 @@ task :deploy => :environment do
     invoke :'bundle:install'
 
     to :launch do
-      queue 'touch tmp/restart.txt'
-      queue 'rvmsudo foreman export upstart /etc/init -u ubuntu -c worker=1,dev_worker=1'
-      invoke 'foreman:restart'
+      queue "touch tmp/restart.txt"
+      queue "rvmsudo foreman export upstart /etc/init -u ubuntu -c #{service_name}"
+      invoke "foreman:restart"
     end
   end
-
 end
 
 # For help in making your deploy script, see the Mina documentation:
@@ -75,4 +81,3 @@ end
 #  - http://nadarei.co/mina/tasks
 #  - http://nadarei.co/mina/settings
 #  - http://nadarei.co/mina/helpers
-
