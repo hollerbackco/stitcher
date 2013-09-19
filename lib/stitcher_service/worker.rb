@@ -21,6 +21,7 @@ class Worker
         error(message)
       else
         data = JSON.parse message.body
+        StitcherService.logger.info message.body
         parts = data["parts"]
         output = data["output"]
         video_id = data["video_id"]
