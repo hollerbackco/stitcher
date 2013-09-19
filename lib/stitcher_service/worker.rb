@@ -25,10 +25,11 @@ class Worker
         parts = data["parts"]
         output = data["output"]
         video_id = data["video_id"]
+        reply = data["reply"]
 
         begin
           process(parts, output, video_id)
-          notify_done("#{output}.mp4", video_id)
+          notify_done("#{output}.mp4", video_id, reply)
         rescue => ex
           Honeybadger.notify(ex, parameters: data)
           raise
@@ -43,9 +44,9 @@ class Worker
     error_queue.send_message(message.body)
   end
 
-  def notify_done(output, video_id)
+  def notify_done(output, video_id, reply)
     StitcherService.logger.info "complete: #{video_id}"
-    finish_queue.send_message({output: output, video_id: video_id}.to_json)
+    finish_queue.send_message({output: output, video_id: video_id, reply: reply}.to_json)
   end
 
   def process(parts, output, video_id)
