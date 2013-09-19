@@ -24,7 +24,7 @@ when 'staging'
   set :service_name, "dev_worker=1"
 else
   set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
-  set :service_name, "worker=1"
+  set :service_name, "worker=1,dev_worker=1"
 end
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
