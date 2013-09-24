@@ -4,7 +4,7 @@ gem "rspec"
 gem "aws-sdk"
 gem "guard"
 gem "guard-rspec"
-gem "foreman"
+gem "foreman", :git => 'https://github.com/ddollar/foreman.git'
 gem "json"
 gem 'mini_magick'
 gem 'streamio-ffmpeg'
