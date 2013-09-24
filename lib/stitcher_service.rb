@@ -17,6 +17,10 @@ class StitcherService
   end
 
   def self.start(*args)
+    trap('SIGTERM') do
+      puts "exiting"
+      exit
+    end
     WorkerGroup.pool(Worker, as: :workers, args: args, size: 10)
     WorkerGroup.run
   end
