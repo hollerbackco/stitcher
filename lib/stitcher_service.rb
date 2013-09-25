@@ -8,7 +8,7 @@ require 'stitcher_service/worker'
 require 'stitcher_service/worker_group'
 
 class StitcherService
-  def Pretty < Logger::Formatter
+  class Pretty < Logger::Formatter
     def call(severity, time, program_name, message)
       "#{time.utc.iso8601} stitcher-#{ENV['SERVICE_ENV']} #{severity}: #{message}\n"
     end
