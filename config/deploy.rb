@@ -21,10 +21,12 @@ set :rvm_path, '/usr/local/rvm/scripts/rvm'
 case ENV['to']
 when 'staging'
   set :domain, "staging.example.com"
-  set :service_name, "dev_worker=1"
+  set :service_name, "worker=1"
+  set :service_env, "development"
 else
   set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
-  set :service_name, "worker=1,dev_worker=1"
+  set :service_name, "stitcher=1, stitcher-dev=1"
+  set :service_env, "production"
 end
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
@@ -44,6 +46,7 @@ task :environment do
 
   # For those using RVM, use this to load an RVM version@gemset.
    invoke :'rvm:use[ruby-2.0.0@default]'
+   queue %[SERVICE_ENV="#{service_env}"]
 end
 
 # Put any custom mkdir's in here for when `mina setup` is ran.
