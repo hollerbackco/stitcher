@@ -46,7 +46,7 @@ task :environment do
 
   # For those using RVM, use this to load an RVM version@gemset.
    invoke :'rvm:use[ruby-2.0.0@default]'
-   queue %[SERVICE_ENV="#{service_env}"]
+   #queue %[SERVICE_ENV="#{service_env}"]
 end
 
 # Put any custom mkdir's in here for when `mina setup` is ran.
@@ -72,7 +72,7 @@ task :deploy => :environment do
 
     to :launch do
       queue "touch tmp/restart.txt"
-      queue "rvmsudo foreman export daemon /etc/init -u ubuntu -c #{service_name}"
+      queue "rvmsudo foreman export upstart /etc/init -u ubuntu -c #{service_name}"
       invoke "foreman:restart"
     end
   end
