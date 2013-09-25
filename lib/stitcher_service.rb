@@ -8,6 +8,12 @@ require 'stitcher_service/worker'
 require 'stitcher_service/worker_group'
 
 class StitcherService
+  def Pretty < Logger::Formatter
+    def call(severity, time, program_name, message)
+      "#{time.utc.iso8601} stitcher-#{ENV['SERVICE_ENV']} #{severity}: #{message}\n"
+    end
+  end
+
   def self.configure
     yield self
   end
@@ -30,6 +36,7 @@ class StitcherService
   def self.create_logger
     logger = Syslog::Logger.new("stitcher")
     logger.level = Logger::INFO
+    logger.formatter = Pretty.new
     logger
   end
 end
