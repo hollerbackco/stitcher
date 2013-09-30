@@ -8,7 +8,7 @@ class Movie
       if movie.valid?
         command << " -cat #{file}"
       else
-        StitcherService.logger.error "part number: #{files.index(file)} - #{file}"
+        StitcherService.logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
       end
     end
     command << " -tmp #{File.dirname(output_file)}"
