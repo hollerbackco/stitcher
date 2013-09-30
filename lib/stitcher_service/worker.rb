@@ -54,7 +54,6 @@ class Worker
     Cacher.new.get(parts) do |files, tmpdir|
       video = process_video(files, "#{output}.mp4", tmpdir)
       process_thumb(video, "#{output}-thumb.png", tmpdir)
-      #process_blurred_thumb(video, "#{output}-thumb-blurred.png", tmpdir)
     end
   end
 
@@ -64,7 +63,7 @@ class Worker
 
     Movie.stitch(files.map(&:path), local_output_file)
     Uploader.upload_to_s3(local_output_file, s3_output)
-    p s3_output.public_url
+    StitcherService.logger.info "output: #{s3_output.public_url}"
 
     local_output_file
   end

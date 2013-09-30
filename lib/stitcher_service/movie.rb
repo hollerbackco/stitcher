@@ -4,19 +4,30 @@ class Movie
 
     command = "MP4Box -force-cat "
     files.each do |file|
-      command << " -cat #{file}"
+      movie = Movie.new(file)
+      if movie.valid?
+        command << " -cat #{file}"
+      else
+        StitcherService.logger.error "part number: #{files.index(file)} - #{file}"
+      end
     end
     command << " -tmp #{File.dirname(output_file)}"
     command << " #{output_file}"
 
-    p command
+    StitcherService.logger.info "run mp4box with: #{command}"
     system(command)
 
     self.new(output_file)
   end
 
+  attr_accessor :file
+
   def initialize(file)
     @file = file
+  end
+
+  def valid?
+    ffmpeg_video.valid?
   end
 
   def screengrab(output_file)
