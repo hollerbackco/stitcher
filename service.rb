@@ -20,10 +20,21 @@ Honeybadger.context({
   environment: env
 })
 
+#work queues
 sqs = AWS::SQS.new
 stitch_queue = sqs.queues.create(CONFIG["STITCH_QUEUE"])
 finish_queue = sqs.queues.create(CONFIG["FINISH_QUEUE"])
-error_queue = sqs.queues.create(CONFIG["ERROR_QUEUE"])
+
+StitcherService.configure do |config|
+  #error notifier
+  sns = AWS::SNS.new
+  error_sns = sns.topics.create(CONFIG["ERROR_SNS"])
+  error_queue = sqs.queues.create(CONFIG["ERROR_SNS"])
+  error_sns.subscribe(error_queue)
+
+  config.error_sns = error_sns
+end
+
 output_bucket = AWS::S3.new.buckets[CONFIG["BUCKET"]]
 
-StitcherService.start(stitch_queue, finish_queue, error_queue, output_bucket)
+StitcherService.start(stitch_queue, finish_queue, output_bucket)

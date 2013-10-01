@@ -5,9 +5,8 @@ describe StitcherService do
     sqs = AWS::SQS.new
     @stitch_queue = sqs.queues.create("video-stitch-test-#{SecureRandom.hex(3)}")
     @finish_queue = sqs.queues.create("video-stitch-ready-tester-#{SecureRandom.hex(3)}")
-    @error_queue = sqs.queues.create("video-stitch-error-tester-#{SecureRandom.hex(3)}")
     @output_bucket = AWS::S3.new.buckets.create("hollerback-app-test-#{SecureRandom.hex(3)}")
-    @worker = Worker.new(@stitch_queue, @finish_queue, @error_queue, @output_bucket)
+    @worker = Worker.new(@stitch_queue, @finish_queue, @output_bucket)
   end
 
   after do

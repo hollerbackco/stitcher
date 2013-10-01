@@ -1,6 +1,8 @@
 class Movie
+  include StitcherService::Util
+
   def self.stitch(files=[], output_file)
-    raise "there must be some files" if files.empty?
+    raise "no files were included in the stitch request" if files.empty?
 
     command = "MP4Box -force-cat "
     files.each do |file|
@@ -8,14 +10,16 @@ class Movie
       if movie.valid?
         command << " -cat #{file}"
       else
-        StitcherService.logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
+        notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
+        logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
       end
     end
     command << " -tmp #{File.dirname(output_file)}"
     command << " #{output_file}"
 
-    StitcherService.logger.info "run mp4box with: #{command}"
-    system(command)
+    logger.info "run mp4box with: #{command}"
+    output = system(command)
+    logger.info output
 
     self.new(output_file)
   end

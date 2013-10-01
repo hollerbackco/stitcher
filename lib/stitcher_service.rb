@@ -1,13 +1,8 @@
 $:.unshift File.dirname(__FILE__)
 
 require 'syslog/logger'
-require 'stitcher_service/movie'
-require 'stitcher_service/cacher'
-require 'stitcher_service/uploader'
-require 'stitcher_service/worker'
-require 'stitcher_service/worker_group'
 
-class StitcherService
+module StitcherService
   class Pretty < Logger::Formatter
     def call(severity, time, program_name, message)
       "#{time.utc.iso8601} stitcher-#{ENV['SERVICE_ENV']} #{severity}: #{message}\n"
@@ -16,6 +11,14 @@ class StitcherService
 
   def self.configure
     yield self
+  end
+
+  def self.error_sns=(sns)
+    @error_sns ||= sns
+  end
+
+  def self.error_sns
+    @error_sns
   end
 
   def self.logger
@@ -31,12 +34,24 @@ class StitcherService
     WorkerGroup.run
   end
 
+  def self.notify_error(message)
+    error_sns.publish(message)
+  end
+
   private
 
   def self.create_logger
     logger = Syslog::Logger.new("stitcher")
     logger.level = Logger::INFO
     logger.formatter = Pretty.new
+    FFMPEG.logger = logger
     logger
   end
 end
+
+require 'stitcher_service/util'
+require 'stitcher_service/movie'
+require 'stitcher_service/cacher'
+require 'stitcher_service/uploader'
+require 'stitcher_service/worker'
+require 'stitcher_service/worker_group'
