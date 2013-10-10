@@ -29,10 +29,12 @@ class Worker
         reply = data["reply"]
 
         begin
-          process(parts, output, video_id)
-          notify_done("#{output}.mp4", video_id, reply)
+          video_info = process(parts, output, video_id)
+          data = data.merge("output" => "#{output}.mp4")
+          data = data.merge("details" => video_info)
+          notify_done(data)
         rescue => ex
-          notify_error(message.body + ex)
+          notify_error(message.body)
           Honeybadger.notify(ex, parameters: data)
           raise
         end
@@ -45,50 +47,51 @@ class Worker
     Cacher.new.get(parts) do |files, tmpdir|
       video = process_video(files, "#{output}.mp4", tmpdir)
       process_thumb(video, "#{output}-thumb.png", tmpdir)
+      video.info
     end
   end
 
   private
 
-  def notify_done(output, video_id, reply)
-    logger.info "complete: #{video_id}"
-    finish_queue.send_message({output: output, video_id: video_id, reply: reply}.to_json)
+  def notify_done(data)
+    logger.info "complete: #{data["video_id"]}"
+    finish_queue.send_message(data.to_json)
   end
 
-  def process_video(files, output_file, tmpdir)
-    local_output_file = "#{tmpdir}/#{File.basename output_file}"
-    s3_output = bucket.objects[output_file]
+  def process_video(files, output_key, tmpdir)
+    local_output_path = "#{tmpdir}/#{File.basename output_key}"
 
-    Movie.stitch(files.map(&:path), local_output_file)
-    Uploader.upload_to_s3(local_output_file, s3_output)
-    logger.info "output: #{s3_output.public_url}"
+    movie = Movie.stitch(files.map(&:path), local_output_path)
+    upload(movie.path, output_key)
 
-    local_output_file
+    movie
   end
 
-  def process_thumb(video, filename, tmpdir)
-    #local output file
-    local_output_file = "#{tmpdir}/#{File.basename filename}"
+  def process_thumb(video, output_key, tmpdir)
+    local_output_path = "#{tmpdir}/#{File.basename output_key}"
 
-    #s3 output file
-    s3_output = bucket.objects[filename]
+    image_path = video.screengrab(local_output_path)
 
-    image = Movie.new(video).screengrab(local_output_file)
-    Uploader.upload_to_s3(image, s3_output)
+    upload(image_path, output_key)
 
-    image
+    image_path
   end
 
-  def process_blurred_thumb(video, filename, tmpdir)
-    #local output file
-    local_output_file = "#{tmpdir}/#{File.basename filename}"
+  def process_blurred_thumb(video, output_key, tmpdir)
+    local_output_path = "#{tmpdir}/#{File.basename output_key}"
 
-    #s3 output file
-    s3_output = bucket.objects[filename]
+    image_path = Movie.new(video).blurred_screengrab(local_output_path)
 
-    image = Movie.new(video).blurred_screengrab(local_output_file)
-    Uploader.upload_to_s3(image, s3_output)
+    upload(image, output_key)
 
-    image
+    image_path
+  end
+
+  def upload(local_path, key)
+    uploader.upload_to_s3(local_path, key)
+  end
+
+  def uploader
+    @uploader ||= Uploader.new(bucket)
   end
 end

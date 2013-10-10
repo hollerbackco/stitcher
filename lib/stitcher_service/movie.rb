@@ -8,10 +8,10 @@ class Movie
     files.each do |file|
       movie = Movie.new(file)
       if movie.valid?
-        command << " -cat #{file}"
+        command << " -cat #{movie.path}"
       else
-        notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
-        logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{file}"
+        notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
+        logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
       end
     end
     command << " -tmp #{File.dirname(output_file)}"
@@ -24,14 +24,29 @@ class Movie
     self.new(output_file)
   end
 
-  attr_accessor :file
+  attr_accessor :path
 
-  def initialize(file)
-    @file = file
+  def initialize(filepath)
+    @path = filepath
   end
 
   def valid?
     ffmpeg_video.valid?
+  end
+
+  def info
+    {
+      size: ffmpeg_video.size,
+      resolution: [ffmpeg_video.width, ffmpeg_video.height],
+      frame_rate: ffmpeg_video.frame_rate,
+      duration: ffmpeg_video.duration,
+      video_codec: ffmpeg_video.video_codec,
+      video_bitrate: ffmpeg_video.video_bitrate,
+      colorspace: ffmpeg_video.colorspace,
+      audio_codec: ffmpeg_video.audio_codec,
+      audio_bitrate: ffmpeg_video.audio_bitrate,
+      audio_sample_rate: ffmpeg_video.audio_sample_rate
+    }
   end
 
   def screengrab(output_file)
@@ -59,6 +74,6 @@ class Movie
   private
 
   def ffmpeg_video
-    @ffmpeg_video ||= ::FFMPEG::Movie.new(@file)
+    @ffmpeg_video ||= ::FFMPEG::Movie.new(path)
   end
 end
