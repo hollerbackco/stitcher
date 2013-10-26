@@ -5,6 +5,10 @@ class Movie
     raise "no files were included in the stitch request" if files.empty?
 
     command = "MP4Box -force-cat "
+    file = files.shift
+    movie = Movie.new(file)
+    command << " -add #{movie.path}"
+
     files.each do |file|
       movie = Movie.new(file)
       if movie.valid?
