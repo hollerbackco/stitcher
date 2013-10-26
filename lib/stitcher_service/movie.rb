@@ -4,26 +4,42 @@ class Movie
   def self.stitch(files=[], output_file)
     raise "no files were included in the stitch request" if files.empty?
 
-    command = "MP4Box -force-cat "
-    file = files.shift
-    movie = Movie.new(file)
-    command << " -add #{movie.path}"
+    tmpdir = File.dirname(output_file)
+    inter_file = File.join(tmpdir, "inter.mpg")
+
+    command = "cat "
 
     files.each do |file|
       movie = Movie.new(file)
+
       if movie.valid?
-        command << " -cat #{movie.path}"
+        mpg_file = "#{movie.path}.mpg"
+        mpg_command = "ffmpeg -i #{movie.path} -y -qscale:v 1 #{mpg_file}"
+        output = system(mpg_command)
+        logger.info output
+        p output
+
+        command << "#{mpg_file} "
       else
         notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
         logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
       end
     end
-    command << " -tmp #{File.dirname(output_file)}"
-    command << " #{output_file}"
+    command << " > #{inter_file}"
 
-    logger.info "run mp4box with: #{command}"
+    logger.info "concatenate file: #{command}"
+    output = system(command)
+
+    # create the final file
+    command = "ffmpeg -i #{inter_file} -qscale:v 4 #{output_file}"
+    output = system(command)
+    p output
+
+    #interleave
+    command = "MP4Box -inter 1000 #{output_file}"
     output = system(command)
     logger.info output
+    p output
 
     self.new(output_file)
   end

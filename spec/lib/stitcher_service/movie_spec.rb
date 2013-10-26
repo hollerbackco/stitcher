@@ -10,8 +10,9 @@ describe Movie do
 
     output = nil
     Dir.mktmpdir do |dir|
-      output = "#{dir}/1.mp4"
+      output = "#{dir}/final.mp4"
       Movie.stitch(files, output)
+      binding.pry
       File.exist?(output).should be_true
     end
 
