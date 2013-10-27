@@ -30,7 +30,7 @@ StitcherService.configure do |config|
   sns = AWS::SNS.new
   error_sns = sns.topics.create(CONFIG["ERROR_SNS"])
   error_queue = sqs.queues.create(CONFIG["ERROR_SNS"])
-  error_sns.subscribe(error_queue)
+  #error_sns.subscribe(error_queue)
 
   config.error_sns = error_sns
 end

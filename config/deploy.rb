@@ -24,7 +24,7 @@ when 'staging'
   set :service_name, "worker=1"
   set :service_env, "development"
 else
-  set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
+  set :domain, "ec2-54-224-250-6.compute-1.amazonaws.com"
   set :service_name, "stitcher=1,stitcher_dev=1"
   set :service_env, "production"
 end

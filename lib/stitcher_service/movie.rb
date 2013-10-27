@@ -12,7 +12,7 @@ class Movie
     files.each do |file|
       movie = Movie.new(file)
 
-      if movie.valid?
+      if movie.valid? and movie.duration > 0.5
         mpg_file = "#{movie.path}.mpg"
         mpg_command = "ffmpeg -i #{movie.path} -y -qscale:v 1 #{mpg_file}"
         output = system(mpg_command)
@@ -26,7 +26,6 @@ class Movie
       end
     end
     command << " > #{inter_file}"
-
     logger.info "concatenate file: #{command}"
     output = system(command)
 
@@ -52,6 +51,10 @@ class Movie
 
   def valid?
     ffmpeg_video.valid?
+  end
+
+  def duration
+    ffmpeg_video.duration
   end
 
   def info

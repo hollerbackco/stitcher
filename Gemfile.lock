@@ -9,9 +9,9 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    aws-sdk (1.14.1)
+    aws-sdk (1.23.0)
       json (~> 1.4)
-      nokogiri (< 1.6.0)
+      nokogiri (>= 1.4.4, < 1.6.0)
       uuidtools (~> 2.1)
     celluloid (0.15.1)
       timers (~> 1.1.0)
@@ -31,7 +31,7 @@ GEM
       rspec (~> 2.13)
     honeybadger (1.8.0)
       json
-    json (1.8.0)
+    json (1.8.1)
     listen (1.2.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
