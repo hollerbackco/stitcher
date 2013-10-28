@@ -12,7 +12,7 @@ class Movie
     files.each do |file|
       movie = Movie.new(file)
 
-      if movie.valid? and movie.duration > 0.5
+      if movie.valid?
         mpg_file = "#{movie.path}.mpg"
         mpg_command = "ffmpeg -i #{movie.path} -y -qscale:v 1 #{mpg_file}"
         output = system(mpg_command)
@@ -20,6 +20,8 @@ class Movie
         p output
 
         command << "#{mpg_file} "
+      elsif movie.duration > 0.3
+        logger.error "video part was too short: #{files.index(file)} - #{movie.path}"
       else
         notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
         logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
@@ -50,7 +52,7 @@ class Movie
   end
 
   def valid?
-    ffmpeg_video.valid?
+    ffmpeg_video.valid? and ffmpeg_video.duration > 0.3
   end
 
   def duration
