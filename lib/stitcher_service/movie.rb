@@ -7,25 +7,26 @@ class Movie
     tmpdir = File.dirname(output_file)
     inter_file = File.join(tmpdir, "inter.mpg")
 
-    command = "cat "
-
-    files.each do |file|
+    # transmux to mpg container format
+    mpgs = files.map do |file|
       movie = Movie.new(file)
 
       if movie.valid?
-        mpg_file = "#{movie.path}.mpg"
-        mpg_command = "ffmpeg -i #{movie.path} -y -qscale:v 1 #{mpg_file}"
-        output = system(mpg_command)
-        logger.info output
-        p output
-
-        command << "#{mpg_file} "
-      elsif movie.duration > 0.3
-        logger.error "video part was too short: #{files.index(file)} - #{movie.path}"
+        mpg_movie = movie.mpgify
       else
-        notify_error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
+        if movie.duration > 0.3
+          logger.error "video part was too short: #{files.index(file)} - #{movie.path}"
+        end
         logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
+        nil
       end
+    end.flatten
+    raise "no valid files in the stitch request" if mpgs.empty?
+
+    # build concatenate command
+    command = "cat "
+    mpgs.each do |movie|
+      command << "#{movie.path} "
     end
     command << " > #{inter_file}"
     logger.info "concatenate file: #{command}"
@@ -34,13 +35,12 @@ class Movie
     # create the final file
     command = "ffmpeg -i #{inter_file} -qscale:v 4 #{output_file}"
     output = system(command)
-    p output
+    logger.info output
 
     #interleave
     command = "MP4Box -inter 1000 #{output_file}"
     output = system(command)
     logger.info output
-    p output
 
     self.new(output_file)
   end
@@ -49,6 +49,14 @@ class Movie
 
   def initialize(filepath)
     @path = filepath
+  end
+
+  def mpgify
+    path = "#{path}.mpg"
+    mpg_command = "ffmpeg -i #{path} -y -qscale:v 1 #{path}"
+    output = system(mpg_command)
+    logger.info output
+    Movie.new(filepath)
   end
 
   def valid?

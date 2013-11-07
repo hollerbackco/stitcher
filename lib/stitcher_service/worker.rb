@@ -34,7 +34,7 @@ class Worker
           data = data.merge("details" => video_info)
           notify_done(data)
         rescue => ex
-          notify_error(message.body)
+          notify_error({body: message.body, message: ex}.to_json)
           Honeybadger.notify(ex, parameters: data)
           raise
         end
