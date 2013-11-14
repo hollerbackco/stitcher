@@ -20,7 +20,7 @@ class Movie
         logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
         nil
       end
-    end.flatten
+    end.compact
     raise "no valid files in the stitch request" if mpgs.empty?
 
     # build concatenate command
