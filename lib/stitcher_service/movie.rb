@@ -14,7 +14,7 @@ class Movie
       if movie.valid?
         mpg_movie = movie.mpgify
       else
-        if movie.duration > 0.3
+        if movie.duration < 0.3
           logger.error "video part was too short: #{files.index(file)} - #{movie.path}"
         end
         logger.error "[ERROR] invalid video part number: #{files.index(file)} - #{movie.path}"
@@ -55,7 +55,6 @@ class Movie
     path = "#{path}.mpg"
     mpg_command = "ffmpeg -i #{path} -y -qscale:v 1 #{path}"
     output = system(mpg_command)
-    logger.info output
     Movie.new(filepath)
   end
 
