@@ -41,9 +41,10 @@ module StitcherService
   private
 
   def self.create_logger
-    logger = Syslog::Logger.new("stitcher")
+    #logger = Syslog::Logger.new("stitcher")
+    logger = Logger.new(STDOUT)
     logger.level = Logger::INFO
-    logger.formatter = Pretty.new
+    logger.formatter = ::StitcherService::Pretty.new
     FFMPEG.logger = logger
     logger
   end

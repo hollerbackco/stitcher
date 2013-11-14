@@ -52,10 +52,10 @@ class Movie
   end
 
   def mpgify
-    path = "#{path}.mpg"
-    mpg_command = "ffmpeg -i #{path} -y -qscale:v 1 #{path}"
+    new_filepath = "#{self.path}.mpg"
+    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 #{new_filepath}"
     output = system(mpg_command)
-    Movie.new(filepath)
+    Movie.new(new_filepath)
   end
 
   def valid?
