@@ -1,7 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Movie do
-
   it "should stitch a file" do
     files = []
     Dir.glob(File.dirname(__FILE__) + '/../../fixtures/chunks/*.mp4') do |item|
@@ -12,7 +11,6 @@ describe Movie do
     Dir.mktmpdir do |dir|
       output = "#{dir}/final.mp4"
       Movie.stitch(files, output)
-      binding.pry
       File.exist?(output).should be_true
     end
 
@@ -44,5 +42,10 @@ describe Movie do
       p movie.info
       movie.info.should_not be_nil
     end
+  end
+
+  it "should grab rotation" do
+    movie = Movie.new(File.dirname(__FILE__) + '/../../fixtures/chunks/1.mp4')
+    movie.rotation.should be_nil
   end
 end

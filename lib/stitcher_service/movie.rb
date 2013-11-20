@@ -7,6 +7,10 @@ class Movie
     tmpdir = File.dirname(output_file)
     inter_file = File.join(tmpdir, "inter.mpg")
 
+    # check rotation
+    movie = Movie.new(files.first)
+    rotation = movie.rotation
+
     # transmux to mpg container format
     mpgs = files.map do |file|
       movie = Movie.new(file)
@@ -33,7 +37,11 @@ class Movie
     output = system(command)
 
     # create the final file
-    command = "ffmpeg -i #{inter_file} -qscale:v 4 #{output_file}"
+    command = "ffmpeg -i #{inter_file}"
+    if rotation
+      command << " -metadata:s:v:0 rotate=#{rotation}"
+    end
+    command << " -qscale:v 4 #{output_file}"
     output = system(command)
     logger.info output
 
@@ -64,6 +72,19 @@ class Movie
 
   def duration
     ffmpeg_video.duration
+  end
+
+  def rotation
+    command = "ffprobe -v quiet -print_format json -show_streams #{path}"
+    Open3.popen3(command) do |stdin, stdout, stderr|
+      data = JSON.parse(stdout.read)["streams"]
+      data = data.map {|stream| stream["tags"]["rotate"] }.compact
+      if data.any?
+        data.first
+      else
+        nil
+      end
+    end
   end
 
   def info
