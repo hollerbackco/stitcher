@@ -6,6 +6,7 @@ production:
   FINISH_QUEUE: "video-stitch-ready"
   ERROR_SNS: "video-stitch-error"
   BUCKET: "hb-media"
+  THREADS: 5
 development:
   AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
   AWS_SECRET_ACCESS_KEY: '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'
@@ -13,6 +14,7 @@ development:
   FINISH_QUEUE: "video-stitch-ready-dev"
   ERROR_SNS: "video-stitch-error-dev"
   BUCKET: "hb-media-dev"
+  THREADS: 3
 test:
   AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
   AWS_SECRET_ACCESS_KEY: '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'
@@ -20,3 +22,4 @@ test:
   FINISH_QUEUE: "video-stitch-ready-dev"
   ERROR_SNS: "video-stitch-error-dev"
   BUCKET: "hb-media-dev"
+  THREADS: 1

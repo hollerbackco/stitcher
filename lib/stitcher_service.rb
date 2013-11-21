@@ -30,7 +30,7 @@ module StitcherService
       puts "exiting"
       exit
     end
-    WorkerGroup.pool(Worker, as: :workers, args: args, size: 10)
+    WorkerGroup.pool(Worker, as: :workers, args: args, size: ENV['THREADS'])
     WorkerGroup.run
   end
 
