@@ -96,7 +96,7 @@ class Movie
     when "270"
       3
     else
-      0
+      nil
     end
   end
 
@@ -116,7 +116,12 @@ class Movie
   end
 
   def screengrab(output_file)
-    ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
+    if transpose
+      ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
+    else
+      ffmpeg_video.screenshot(output_file)
+    end
+
     image = ::MiniMagick::Image.new(output_file)
     image.resize "320x320^"
     image.gravity "center"
