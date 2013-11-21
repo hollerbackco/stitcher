@@ -78,9 +78,13 @@ class Movie
     command = "ffprobe -v quiet -print_format json -show_streams #{path}"
     Open3.popen3(command) do |stdin, stdout, stderr|
       data = JSON.parse(stdout.read)["streams"]
-      data = data.map {|stream| stream["tags"]["rotate"] }.compact
-      if data.any?
-        data.first
+      if data
+        data = data.map {|stream| stream["tags"]["rotate"] }.compact
+        if data.any?
+          data.first
+        else
+          nil
+        end
       else
         nil
       end
