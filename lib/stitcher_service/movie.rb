@@ -87,6 +87,19 @@ class Movie
     end
   end
 
+  def transpose
+    case rotation
+    when "90"
+      1
+    when "180"
+      2
+    when "270"
+      3
+    else
+      0
+    end
+  end
+
   def info
     {
       size: ffmpeg_video.size,
@@ -103,8 +116,7 @@ class Movie
   end
 
   def screengrab(output_file)
-    #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=1\"")
-    ffmpeg_video.screenshot(output_file)
+    ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
     image = ::MiniMagick::Image.new(output_file)
     image.resize "320x320^"
     image.gravity "center"
