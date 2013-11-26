@@ -66,6 +66,7 @@ class Movie
       mpg_command << "-vf \"transpose=#{transpose}\" "
     end
     mpg_command << new_filepath
+    p mpg_command
 
     output = system(mpg_command)
     Movie.new(new_filepath)
