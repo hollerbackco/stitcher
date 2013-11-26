@@ -101,10 +101,8 @@ class Movie
     case rotation
     when "90"
       1
-    when "180"
-      2
     when "270"
-      3
+      2
     else
       nil
     end
