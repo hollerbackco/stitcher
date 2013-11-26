@@ -61,7 +61,12 @@ class Movie
 
   def mpgify
     new_filepath = "#{self.path}.mpg"
-    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 #{new_filepath}"
+    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 "
+    if transpose
+      mpg_command << "-vf \"transpose=#{transpose}\" "
+    end
+    mpg_command << new_filepath
+
     output = system(mpg_command)
     Movie.new(new_filepath)
   end
@@ -120,11 +125,13 @@ class Movie
   end
 
   def screengrab(output_file)
-    if transpose
-      ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
-    else
-      ffmpeg_video.screenshot(output_file)
-    end
+    #if transpose
+      #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
+    #else
+      #ffmpeg_video.screenshot(output_file)
+    #end
+    #
+    ffmpeg_video.screenshot(output_file)
 
     image = ::MiniMagick::Image.new(output_file)
     image.resize "320x320^"
