@@ -61,7 +61,7 @@ class Movie
 
   def mpgify
     new_filepath = "#{self.path}.mpg"
-    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 "
+    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 -r 24 "
     if transpose
       mpg_command << "-vf \"transpose=#{transpose}\" "
     end
