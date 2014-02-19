@@ -47,6 +47,7 @@ class Worker
     Cacher.new.get(parts) do |files, tmpdir|
       video = process_video(files, "#{output}.mp4", tmpdir)
       process_thumb(video, "#{output}-thumb.png", tmpdir)
+      process_gif(video, "#{output}.gif", tmpdir)
       video.info
     end
   end
@@ -75,6 +76,17 @@ class Worker
     upload(image_path, output_key)
 
     image_path
+  end
+
+  #create a gif and upload it
+  def process_gif(video, output_key, tmpdir)
+    local_output_path = "#{tmpdir}/#{File.basename output_key}"
+
+    gif_path = video.gif(local_output_path)
+
+    upload(gif_path, output_key)
+
+    gif_path
   end
 
   def process_blurred_thumb(video, output_key, tmpdir)

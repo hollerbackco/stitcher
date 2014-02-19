@@ -139,6 +139,17 @@ class Movie
     output_file
   end
 
+  def gif(output_file)
+    #take the video and create the gif
+    gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=0.2*PTS" ' << "-pix_fmt rgb24 -r 10 -s 320x240 #{output_file}-tmp.gif"
+    system(gif_command) #create the temporary gif file
+
+    gifify_command = "gifsicle --delay=20 --loop #{output_file}-tmp.gif > #{output_file}"
+    system(gifify_command)
+
+    output_file
+  end
+
   def blurred_screengrab(output_file)
     #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=1\"")
     ffmpeg_video.screenshot(output_file)
