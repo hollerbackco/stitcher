@@ -13,7 +13,7 @@ require 'mina/rvm'    # for rvm support. (http://rvm.io)
 set :application, 'app'
 set :user, 'ubuntu'
 set :deploy_to, '/home/ubuntu/stitcher-service'
-set :repository, 'git@github.com:stabib/hollerback-stitcher.git'
+set :repository, 'git@github.com:hollerbackco/hollerback-stitcher.git'
 set :branch, 'dev'
 set :forward_agent, true
 set :rvm_path, '/usr/local/rvm/scripts/rvm'
