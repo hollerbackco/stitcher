@@ -140,12 +140,19 @@ class Movie
   end
 
   def gif(output_file)
+
+    logger.debug "video path: " +  @path
+
+    rate =  1.0 / @ffmpeg_video.duration
+    logger.debug "pts rate: " + rate.to_s
     #take the video and create the gif
-    gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=0.2*PTS" ' << "-pix_fmt rgb24 -r 10 -s 320x240 #{output_file}-tmp.gif"
+    gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -t 1 -r 3  #{output_file}-tmp.gif"
+    logger.debug "gif command: " + gif_command
     system(gif_command) #create the temporary gif file
 
     gifify_command = "gifsicle --delay=20 --loop #{output_file}-tmp.gif > #{output_file}"
-    system(gifify_command)
+    logger.debug "gifsicle command: " + gifify_command
+    #system(gifify_command)
 
     output_file
   end
