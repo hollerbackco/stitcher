@@ -144,7 +144,7 @@ class Movie
     rate =  1.01 / @ffmpeg_video.duration
 
     #take the video and create the gif
-    gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -t 1 -r 3  #{output_file}"
+    gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -r 4  #{output_file}"
 
     system(gif_command) #create the temporary gif file
 
