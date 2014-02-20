@@ -100,7 +100,6 @@ class Worker
   end
 
   def upload(local_path, key)
-    logger.info "upload: #{local_path} with key #{key}"
     uploader.upload_to_s3(local_path, key)
   end
 
