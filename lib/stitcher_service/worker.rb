@@ -86,7 +86,7 @@ class Worker
 
     upload(local_output_path, output_key)
 
-    gif_path
+    local_output_path
   end
 
   def process_blurred_thumb(video, output_key, tmpdir)
@@ -100,6 +100,7 @@ class Worker
   end
 
   def upload(local_path, key)
+    logger.info "upload: #{local_path} with key #{key}"
     uploader.upload_to_s3(local_path, key)
   end
 

@@ -141,7 +141,7 @@ class Movie
 
   def gif(output_file)
 
-    logger.debug "video path: " +  @path
+    logger.info "video path: " +  @path
 
     rate =  1.0 / @ffmpeg_video.duration
     logger.info "sajjad pts rate: " + rate.to_s
