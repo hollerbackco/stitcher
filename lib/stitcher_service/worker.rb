@@ -82,9 +82,9 @@ class Worker
   def process_gif(video, output_key, tmpdir)
     local_output_path = "#{tmpdir}/#{File.basename output_key}"
 
-    gif_path = video.gif(local_output_path)
+    video.gif(local_output_path)
 
-    upload(gif_path, output_key)
+    upload(local_output_path, output_key)
 
     gif_path
   end
