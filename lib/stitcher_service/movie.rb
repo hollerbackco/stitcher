@@ -73,7 +73,7 @@ class Movie
   end
 
   def valid?
-    ffmpeg_video.valid? and ffmpeg_video.duration > 0.3
+    ffmpeg_video.valid?
   end
 
   def duration
