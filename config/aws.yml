@@ -23,3 +23,11 @@ test:
   ERROR_SNS: "video-stitch-error-dev"
   BUCKET: "hb-media-dev"
   THREADS: 1
+local:
+  AWS_ACCESS_KEY_ID: 'AKIAJLG6CN7ONSGY6YXA'
+  AWS_SECRET_ACCESS_KEY: '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'
+  STITCH_QUEUE: "video-stitch-local"
+  FINISH_QUEUE: "video-stitch-ready-local"
+  ERROR_SNS: "video-stitch-error-dev"
+  BUCKET: "hb-media-dev"
+  THREADS: 1
