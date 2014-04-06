@@ -1,5 +1,6 @@
 .idea
 .rvmrc
+*.env
 logs/
 .DS_Store
 *.mpg
