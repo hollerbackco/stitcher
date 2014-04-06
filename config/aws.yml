@@ -28,6 +28,6 @@ local:
   AWS_SECRET_ACCESS_KEY: 'TSd+yTZKXidBtYzOBFjhGkREHHD458Hv4BGMCsEx'
   STITCH_QUEUE: "video-stitch-local"
   FINISH_QUEUE: "video-stitch-ready-local"
-  ERROR_SNS: "video-stitch-error-dev"
+  ERROR_SNS: "video-stitch-error-local"
   BUCKET: "hb-media-dev"
   THREADS: 1
