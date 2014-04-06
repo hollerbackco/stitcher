@@ -33,6 +33,7 @@ Honeybadger.context({
                         environment: env
                     })
 
+sqs = AWS::SQS.new
 
 StitcherService.configure do |config|
   #error notifier
@@ -46,7 +47,7 @@ end
 
 output_bucket = AWS::S3.new.buckets[CONFIG["BUCKET"]]
 
-sqs = AWS::SQS.new
+
 stitch_queue = nil
 finish_queue = nil
 
