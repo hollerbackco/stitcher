@@ -1,13 +1,14 @@
 require 'bundler'
+require 'dotenv'
 Bundler.require
+
+Dotenv.load('./local.env') if File.exist?('./local.env')
 
 require './lib/stitcher_service'
 
 $stdout.sync = true
 
 env = ENV["SERVICE_ENV"] || "production"
-
-env = 'local' if ENV["RACK_ENV"]
 
 # configuration
 CONFIG = YAML.load_file("./config/aws.yml")[env]
