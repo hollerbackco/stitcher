@@ -38,7 +38,7 @@ class Worker
           data = data.merge("output" => "#{output}.mp4")
           data = data.merge("details" => video_info)
           notify_done(data)
-        rescue => ex
+        rescue Exception => ex
 
           if(backoff == nil)
             data["backoff"] = 1
