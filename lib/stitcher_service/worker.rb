@@ -27,6 +27,11 @@ class Worker
         output = data["output"]
         video_id = data["video_id"]
         reply = data["reply"]
+        backoff = data["backoff"]
+
+        if(backoff != nil)
+          logger.info backoff.to_s
+        end
 
         begin
           video_info = process(parts, output, video_id)
@@ -34,9 +39,20 @@ class Worker
           data = data.merge("details" => video_info)
           notify_done(data)
         rescue => ex
-          notify_error({body: message.body, message: ex}.to_json)
-          Honeybadger.notify(ex, parameters: data)
-          raise
+
+          if(backoff == nil)
+            data["backoff"] = 1
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
+
+          elsif(backoff != nil && backoff < 128) #make sure it's less than 128
+            data["backoff"] = backoff * 2;
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
+
+          else
+            logger.error "couldn't process video"
+            notify_error({body: message.body, message: ex}.to_json)
+            Honeybadger.notify(ex, parameters: data)
+          end
         end
       end
     end

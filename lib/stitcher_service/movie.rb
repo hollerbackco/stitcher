@@ -35,6 +35,7 @@ class Movie
     command << " > #{inter_file}"
     logger.info "concatenate file: #{command}"
     output = system(command)
+    logger.info output
 
     # create the final file
     command = "ffmpeg -i #{inter_file}"
@@ -69,6 +70,7 @@ class Movie
     p mpg_command
 
     output = system(mpg_command)
+    logger.info output
     Movie.new(new_filepath)
   end
 
@@ -146,8 +148,8 @@ class Movie
     #take the video and create the gif
     gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -r 1  #{output_file}"
 
-    system(gif_command) #create the temporary gif file
-
+    output = system(gif_command) #create the temporary gif file
+    logger.info output
     output_file
   end
 
