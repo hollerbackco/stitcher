@@ -1,5 +1,8 @@
 require 'bundler'
+require 'dotenv'
 Bundler.require
+
+Dotenv.load('./local.env') if File.exist?('./local.env')
 
 require './lib/stitcher_service'
 
@@ -10,20 +13,27 @@ env = ENV["SERVICE_ENV"] || "production"
 # configuration
 CONFIG = YAML.load_file("./config/aws.yml")[env]
 
-AWS.config(access_key_id: CONFIG["AWS_ACCESS_KEY_ID"],
-           secret_access_key: CONFIG["AWS_SECRET_ACCESS_KEY"])
+if (env == 'local')
+  AWS.config(
+      :use_ssl => false,
+      :sqs_endpoint => "localhost",
+      :sqs_port => 4568,
+      access_key_id: CONFIG["AWS_ACCESS_KEY_ID"],
+      secret_access_key: CONFIG["AWS_SECRET_ACCESS_KEY"])
+else
+  AWS.config(access_key_id: CONFIG["AWS_ACCESS_KEY_ID"],
+             secret_access_key: CONFIG["AWS_SECRET_ACCESS_KEY"])
+end
+
 
 Honeybadger.configure do |config|
   config.api_key = 'af50d456'
 end
 Honeybadger.context({
-  environment: env
-})
+                        environment: env
+                    })
 
-#work queues
 sqs = AWS::SQS.new
-stitch_queue = sqs.queues.create(CONFIG["STITCH_QUEUE"])
-finish_queue = sqs.queues.create(CONFIG["FINISH_QUEUE"])
 
 StitcherService.configure do |config|
   #error notifier
@@ -36,5 +46,34 @@ StitcherService.configure do |config|
 end
 
 output_bucket = AWS::S3.new.buckets[CONFIG["BUCKET"]]
+
+
+stitch_queue = nil
+finish_queue = nil
+
+queue_collection = sqs.queues
+queue_collection.each do |queue|
+  p queue.url
+end
+
+
+#work queues
+if (env != 'local')
+  stitch_queue = sqs.queues.create(CONFIG["STITCH_QUEUE"])
+  finish_queue = sqs.queues.create(CONFIG["FINISH_QUEUE"])
+else
+
+  begin
+    stitch_queue = sqs.queues.named(CONFIG["STITCH_QUEUE"])
+  rescue Exception => e
+    stitch_queue = sqs.queues.create(CONFIG["STITCH_QUEUE"])
+  end
+
+  begin
+    finish_queue = sqs.queues.named(CONFIG["FINISH_QUEUE"])
+  rescue Exception => e
+    finish_queue = sqs.queues.create(CONFIG["FINISH_QUEUE"])
+  end
+end
 
 StitcherService.start(stitch_queue, finish_queue, output_bucket)

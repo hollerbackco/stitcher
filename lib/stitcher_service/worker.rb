@@ -17,7 +17,7 @@ class Worker
     logger.info "start polling"
     jobs_queue.poll(attributes: [:all]) do |message|
       logger.info "recieve message"
-      if message.approximate_receive_count > MAX_RETRIES
+      if message.approximate_receive_count != nil &&  message.approximate_receive_count > MAX_RETRIES
         notify_error(message.body)
       else
         data = JSON.parse message.body

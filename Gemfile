@@ -10,5 +10,7 @@ gem 'mini_magick'
 gem 'streamio-ffmpeg'
 gem 'honeybadger'
 gem 'celluloid'
+gem 'fake_sqs'
+gem 'dotenv'
 
 gem 'pry'

@@ -14,7 +14,7 @@ set :application, 'app'
 set :user, 'ubuntu'
 set :deploy_to, '/home/ubuntu/stitcher-service'
 set :repository, 'git@github.com:hollerbackco/hollerback-stitcher.git'
-set :branch, 'dev'
+set :branch, 'master'
 set :forward_agent, true
 set :rvm_path, '/usr/local/rvm/scripts/rvm'
 
@@ -24,7 +24,7 @@ when 'staging'
   set :service_name, "stitcher_dev=1"
   set :service_env, "development"
 else
-  set :domain, "ec2-54-198-205-46.compute-1.amazonaws.com"
+  set :domain, "ec2-54-224-250-6.compute-1.amazonaws.com"
   set :service_name, "stitcher=1"
   set :service_env, "production"
 end
