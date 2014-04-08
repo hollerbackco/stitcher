@@ -15,7 +15,7 @@ class Movie
 
   def self.execute_process(command, timeout=0)
     logger.info "timeout: #{timeout}"
-    if(timeout < 0)
+    if (timeout < 0)
       raise TimeoutException.new("Timeout: #{command} pre-execution")
     end
     pid = Process.spawn(command)
@@ -75,14 +75,16 @@ class Movie
     # create the final file
     command = "ffmpeg -i #{inter_file}"
     #if rotation
-      #command << " -metadata:s:v:0 rotate=#{rotation}"
+    #command << " -metadata:s:v:0 rotate=#{rotation}"
     #end
     command << " -qscale:v 4 #{output_file}"
     Movie.execute_process(command, end_time - Time.now)
 
-    #interleave
-    command = "MP4Box -inter 1000 #{output_file}"
-    Movie.execute_process(command, end_time - Time.now)
+    if (ENV["SERVICE_ENV"] != 'local')
+      #interleave
+      command = "MP4Box -inter 1000 #{output_file}"
+      Movie.execute_process(command, end_time - Time.now)
+    end
 
     self.new(output_file)
   end
@@ -120,7 +122,7 @@ class Movie
     Open3.popen3(command) do |stdin, stdout, stderr|
       data = JSON.parse(stdout.read)["streams"]
       if data
-        data = data.map {|stream| stream["tags"]["rotate"] }.compact
+        data = data.map { |stream| stream["tags"]["rotate"] }.compact
         if data.any?
           data.first
         else
@@ -134,35 +136,35 @@ class Movie
 
   def transpose
     case rotation
-    when "90"
-      1
-    when "270"
-      2
-    else
-      nil
+      when "90"
+        1
+      when "270"
+        2
+      else
+        nil
     end
   end
 
   def info
     {
-      size: ffmpeg_video.size,
-      resolution: [ffmpeg_video.width, ffmpeg_video.height],
-      frame_rate: ffmpeg_video.frame_rate,
-      duration: ffmpeg_video.duration,
-      video_codec: ffmpeg_video.video_codec,
-      video_bitrate: ffmpeg_video.video_bitrate,
-      colorspace: ffmpeg_video.colorspace,
-      audio_codec: ffmpeg_video.audio_codec,
-      audio_bitrate: ffmpeg_video.audio_bitrate,
-      audio_sample_rate: ffmpeg_video.audio_sample_rate
+        size: ffmpeg_video.size,
+        resolution: [ffmpeg_video.width, ffmpeg_video.height],
+        frame_rate: ffmpeg_video.frame_rate,
+        duration: ffmpeg_video.duration,
+        video_codec: ffmpeg_video.video_codec,
+        video_bitrate: ffmpeg_video.video_bitrate,
+        colorspace: ffmpeg_video.colorspace,
+        audio_codec: ffmpeg_video.audio_codec,
+        audio_bitrate: ffmpeg_video.audio_bitrate,
+        audio_sample_rate: ffmpeg_video.audio_sample_rate
     }
   end
 
   def screengrab(output_file)
     #if transpose
-      #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
+    #ffmpeg_video.screenshot(output_file, custom: "-vf \"transpose=#{transpose}\"")
     #else
-      #ffmpeg_video.screenshot(output_file)
+    #ffmpeg_video.screenshot(output_file)
     #end
     #
     ffmpeg_video.screenshot(output_file)
@@ -176,7 +178,7 @@ class Movie
 
   def gif(output_file)
 
-    rate =  2.00 / @ffmpeg_video.duration
+    rate = 2.00 / @ffmpeg_video.duration
 
     #take the video and create the gif
     gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -r 1  #{output_file}"
