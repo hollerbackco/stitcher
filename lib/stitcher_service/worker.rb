@@ -7,7 +7,7 @@ class Worker
   MAX_RETRIES = 10
 
   def initialize(input_queue, output_queue, bucket)
-    @jobs_queue   = input_queue
+    @jobs_queue = input_queue
     @finish_queue = output_queue
     @bucket = bucket
     async.run
@@ -17,7 +17,7 @@ class Worker
     logger.info "start polling"
     jobs_queue.poll(attributes: [:all]) do |message|
       logger.info "recieve message"
-      if message.approximate_receive_count != nil &&  message.approximate_receive_count > MAX_RETRIES
+      if message.approximate_receive_count != nil && message.approximate_receive_count > MAX_RETRIES
         notify_error(message.body)
       else
         data = JSON.parse message.body
@@ -29,31 +29,40 @@ class Worker
         reply = data["reply"]
         backoff = data["backoff"]
 
-        if(backoff != nil)
+        if (backoff != nil)
           logger.info backoff.to_s
         end
+        t = Thread.new do
+          begin
+            video_info = process(parts, output, video_id)
+            data = data.merge("output" => "#{output}.mp4")
+            data = data.merge("details" => video_info)
+            notify_done(data)
+          rescue Exception => ex
 
-        begin
-          video_info = process(parts, output, video_id)
-          data = data.merge("output" => "#{output}.mp4")
-          data = data.merge("details" => video_info)
-          notify_done(data)
-        rescue Exception => ex
+            if (backoff == nil)
+              data["backoff"] = 1
+              jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
 
-          if(backoff == nil)
-            data["backoff"] = 1
-            jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
+            elsif (backoff != nil && backoff < 128) #make sure it's less than 128
+              data["backoff"] = backoff * 2;
+              jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
 
-          elsif(backoff != nil && backoff < 128) #make sure it's less than 128
-            data["backoff"] = backoff * 2;
-            jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
-
-          else
-            logger.error "couldn't process video"
-            notify_error({body: message.body, message: ex}.to_json)
-            Honeybadger.notify(ex, parameters: data)
+            else
+              logger.error "couldn't process video"
+              notify_error({body: message.body, message: ex}.to_json)
+              Honeybadger.notify(ex, parameters: data)
+            end
           end
         end
+
+        bg_thread = t.join(25) #don't let the above operation to take forever
+        if(bg_thread == nil)
+          t.kill #kill thread
+          logger.error "video process took too long"
+          notify_error({body: message.body, message: "ffmpeg took to long to process video"}.to_json)
+        end
+
       end
     end
   end
