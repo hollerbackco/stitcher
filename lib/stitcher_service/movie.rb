@@ -62,7 +62,7 @@ class Movie
     end.compact
     raise "no valid files in the stitch request" if mpgs.empty?
 
-    # build concatenate command
+    # build concatenate command                                                                                                                                                                 o
     command = "cat "
     mpgs.each do |movie|
       command << "#{movie.path} "
@@ -77,7 +77,7 @@ class Movie
     #if rotation
     #command << " -metadata:s:v:0 rotate=#{rotation}"
     #end
-    command << " -qscale:v 4 #{output_file}"
+    command << " -preset ultrafast -qscale:v 4 #{output_file}"
     Movie.execute_process(command, end_time - Time.now)
 
     if (ENV["SERVICE_ENV"] != 'local')
