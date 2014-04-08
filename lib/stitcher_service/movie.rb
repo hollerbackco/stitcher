@@ -1,5 +1,23 @@
+require 'timeout'
+
 class Movie
   include StitcherService::Util
+
+
+  def execute_process(command)
+    pid = Process.spawn(command)
+    begin
+      Timeout.timeout(25) do
+        logger.info 'waiting for the process to end'
+        Process.wait(pid)
+        logger.info 'process finished in time'
+      end
+    rescue Timeout::Error
+      logger.info 'process not finished in time, killing it'
+      Process.kill('TERM', pid)
+      raise "process took too long to execute"
+    end
+  end
 
   def self.stitch(files=[], output_file)
     raise "no files were included in the stitch request" if files.empty?
@@ -34,8 +52,8 @@ class Movie
     end
     command << " > #{inter_file}"
     logger.info "concatenate file: #{command}"
-    output = system(command)
-    logger.info output
+
+    execute_process(command)
 
     # create the final file
     command = "ffmpeg -i #{inter_file}"
@@ -43,13 +61,11 @@ class Movie
       #command << " -metadata:s:v:0 rotate=#{rotation}"
     #end
     command << " -qscale:v 4 #{output_file}"
-    output = system(command)
-    logger.info output
+    execute_process(command)
 
     #interleave
     command = "MP4Box -inter 1000 #{output_file}"
-    output = system(command)
-    logger.info output
+    execute_process(command)
 
     self.new(output_file)
   end
@@ -69,7 +85,7 @@ class Movie
     mpg_command << new_filepath
     p mpg_command
 
-    output = system(mpg_command)
+    output = execute_process(mpg_command)
     logger.info output
     Movie.new(new_filepath)
   end
@@ -148,8 +164,8 @@ class Movie
     #take the video and create the gif
     gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -r 1  #{output_file}"
 
-    output = system(gif_command) #create the temporary gif file
-    logger.info output
+    execute_process(gif_command) #create the temporary gif file
+
     output_file
   end
 
