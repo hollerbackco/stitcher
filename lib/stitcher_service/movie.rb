@@ -3,24 +3,41 @@ require 'timeout'
 class Movie
   include StitcherService::Util
 
+  class TimeoutException < Exception
+    def initialize(message)
+      @message = message
+    end
 
-  def execute_process(command)
+    def to_s
+      @message
+    end
+  end
+
+  def self.execute_process(command, timeout=0)
+    logger.info "timeout: #{timeout}"
+    if(timeout < 0)
+      raise TimeoutException.new("Timeout: #{command} pre-execution")
+    end
     pid = Process.spawn(command)
     begin
-      Timeout.timeout(25) do
+      Timeout.timeout(timeout) do
         logger.info 'waiting for the process to end'
         Process.wait(pid)
         logger.info 'process finished in time'
       end
     rescue Timeout::Error
-      logger.info 'process not finished in time, killing it'
+      logger.info "Timeout: '#{command}' process not finished in time, killing it."
       Process.kill('TERM', pid)
-      raise "process took too long to execute"
+      raise TimeoutException.new("Timeout: #{command} took too long to execute")
+    rescue Exception => ex
+      logger.error ex.message
     end
   end
 
   def self.stitch(files=[], output_file)
     raise "no files were included in the stitch request" if files.empty?
+
+    end_time = Time.now + 25 #need to exeucte this within 25s
 
     tmpdir = File.dirname(output_file)
     inter_file = File.join(tmpdir, "inter.mpg")
@@ -34,7 +51,7 @@ class Movie
       movie = Movie.new(file)
 
       if movie.valid?
-        mpg_movie = movie.mpgify
+        mpg_movie = movie.mpgify(end_time - Time.now)
       else
         if movie.duration < 0.3
           logger.error "video part was too short: #{files.index(file)} - #{movie.path}"
@@ -53,7 +70,7 @@ class Movie
     command << " > #{inter_file}"
     logger.info "concatenate file: #{command}"
 
-    execute_process(command)
+    Movie.execute_process(command, end_time - Time.now)
 
     # create the final file
     command = "ffmpeg -i #{inter_file}"
@@ -61,11 +78,11 @@ class Movie
       #command << " -metadata:s:v:0 rotate=#{rotation}"
     #end
     command << " -qscale:v 4 #{output_file}"
-    execute_process(command)
+    Movie.execute_process(command, end_time - Time.now)
 
     #interleave
     command = "MP4Box -inter 1000 #{output_file}"
-    execute_process(command)
+    Movie.execute_process(command, end_time - Time.now)
 
     self.new(output_file)
   end
@@ -76,7 +93,7 @@ class Movie
     @path = filepath
   end
 
-  def mpgify
+  def mpgify(timeout)
     new_filepath = "#{self.path}.mpg"
     mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 -r 24 "
     if transpose
@@ -85,8 +102,8 @@ class Movie
     mpg_command << new_filepath
     p mpg_command
 
-    output = execute_process(mpg_command)
-    logger.info output
+    Movie.execute_process(mpg_command, timeout)
+
     Movie.new(new_filepath)
   end
 
@@ -164,7 +181,7 @@ class Movie
     #take the video and create the gif
     gif_command = "ffmpeg -i " << @path << " -filter:v " + '"setpts=' + rate.to_s + '*PTS" ' << "-pix_fmt rgb24 -r 1  #{output_file}"
 
-    execute_process(gif_command) #create the temporary gif file
+    Movie.execute_process(gif_command) #create the temporary gif file
 
     output_file
   end

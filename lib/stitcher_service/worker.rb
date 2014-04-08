@@ -33,42 +33,44 @@ class Worker
           logger.info backoff.to_s
         end
 
-          begin
-            video_info = process(parts, output, video_id)
-            data = data.merge("output" => "#{output}.mp4")
-            data = data.merge("details" => video_info)
-            notify_done(data)
-          rescue Exception => ex
+        begin
+          #the whole processing shouldn't take longer than 25 seconds
+          video_info = process(parts, output, video_id)
+          data = data.merge("output" => "#{output}.mp4")
+          data = data.merge("details" => video_info)
+          notify_done(data)
+        rescue Movie::TimeoutException => ex
+          logger.info "Timeout!: #{ex.message}"
+          #back off a couple of times
+          backoff = data["long_running_backoff"]
+          if (backoff == nil)
+            data["long_running_backoff"] = 2
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
 
-            if (backoff == nil)
-              data["failure_backoff"] = 1
-              jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
+          elsif backoff < 9
+            data["long_running_backoff"] = backoff * 2
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
 
-            elsif (backoff < 128) #make sure it's less than 128
-              data["failure_backoff"] = backoff * 2;
-              jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
-            else
-              logger.error "couldn't process video"
-              notify_error({body: message.body, message: ex}.to_json)
-              Honeybadger.notify(ex, parameters: data)
-            end
+          else
+            logger.error "video process took too long"
+            notify_error({body: message.body, message: "ffmpeg took to long to process video"}.to_json)
           end
+        rescue Exception => ex
+          logger.error ex.message
+          if (backoff == nil)
+            data["failure_backoff"] = 1
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
 
+          elsif (backoff < 128) #make sure it's less than 128
+            data["failure_backoff"] = backoff * 2;
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
+          else
+            logger.error "couldn't process video"
+            notify_error({body: message.body, message: ex}.to_json)
+            Honeybadger.notify(ex, parameters: data)
+          end
+        end
 
-          # #back off a couple of times
-          # backoff = data["long_running_backoff"]
-          # if(backoff == nil)
-          #   data["long_running_backoff"] = 2
-          #   jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
-          #
-          # elsif backoff < 9
-          #   data["long_running_backoff"] = backoff * 2
-          #   jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
-          #
-          # else
-          #   logger.error "video process took too long"
-          #   notify_error({body: message.body, message: "ffmpeg took to long to process video"}.to_json)
-          # end
 
       end
     end
@@ -76,12 +78,17 @@ class Worker
 
   def process(parts, output, video_id)
     logger.info "stitch video: #{video_id}"
+
+    #TODO: upload files in parallel
+
+    #shouldn't take longer than 25s
     Cacher.new.get(parts) do |files, tmpdir|
       video = process_video(files, "#{output}.mp4", tmpdir)
       process_thumb(video, "#{output}-thumb.png", tmpdir)
       process_gif(video, "#{output}.gif", tmpdir)
       video.info
     end
+
   end
 
   private
