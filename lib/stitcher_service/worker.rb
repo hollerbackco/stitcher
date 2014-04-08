@@ -27,7 +27,7 @@ class Worker
         output = data["output"]
         video_id = data["video_id"]
         reply = data["reply"]
-        backoff = data["backoff"]
+        backoff = data["failure_backoff"]
 
         if (backoff != nil)
           logger.info backoff.to_s
@@ -41,13 +41,12 @@ class Worker
           rescue Exception => ex
 
             if (backoff == nil)
-              data["backoff"] = 1
-              jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
+              data["failure_backoff"] = 1
+              jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
 
-            elsif (backoff != nil && backoff < 128) #make sure it's less than 128
-              data["backoff"] = backoff * 2;
-              jobs_queue.send_message(data.to_json, {:delay_seconds => data["backoff"]})
-
+            elsif (backoff < 128) #make sure it's less than 128
+              data["failure_backoff"] = backoff * 2;
+              jobs_queue.send_message(data.to_json, {:delay_seconds => data["failure_backoff"]})
             else
               logger.error "couldn't process video"
               notify_error({body: message.body, message: ex}.to_json)
@@ -59,8 +58,21 @@ class Worker
         bg_thread = t.join(25) #don't let the above operation to take forever
         if(bg_thread == nil)
           t.kill #kill thread
-          logger.error "video process took too long"
-          notify_error({body: message.body, message: "ffmpeg took to long to process video"}.to_json)
+
+          #back off a couple of times
+          backoff = data["long_running_backoff"]
+          if(backoff == nil)
+            data["long_running_backoff"] = 2
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
+
+          elsif backoff < 9
+            data["long_running_backoff"] = backoff * 2
+            jobs_queue.send_message(data.to_json, {:delay_seconds => data["long_running_backoff"]})
+
+          else
+            logger.error "video process took too long"
+            notify_error({body: message.body, message: "ffmpeg took to long to process video"}.to_json)
+          end
         end
 
       end
