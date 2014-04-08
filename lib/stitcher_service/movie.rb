@@ -18,7 +18,9 @@ class Movie
     if (timeout < 0)
       raise TimeoutException.new("Timeout: #{command} pre-execution")
     end
+
     pid = Process.spawn(command)
+
     begin
       Timeout.timeout(timeout) do
         logger.info 'waiting for the process to end'
@@ -29,8 +31,6 @@ class Movie
       logger.info "Timeout: '#{command}' process not finished in time, killing it."
       Process.kill('TERM', pid)
       raise TimeoutException.new("Timeout: #{command} took too long to execute")
-    rescue Exception => ex
-      logger.error ex.message
     end
   end
 
