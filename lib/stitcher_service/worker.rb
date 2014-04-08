@@ -16,6 +16,10 @@ class Worker
   def run
     logger.info "start polling"
     jobs_queue.poll(attributes: [:all]) do |message|
+
+      #redirect stdout and stderr to the logger file
+      redirect_output
+
       logger.info "recieve message"
       if message.approximate_receive_count != nil && message.approximate_receive_count > MAX_RETRIES
         notify_error(message.body)
@@ -73,6 +77,15 @@ class Worker
 
 
       end
+    end
+  end
+
+  def redirect_output
+    begin
+      $stdout.reopen(ENV["LOG_FILE"], "w")
+      $stderr.reopen(ENV["LOG_FILE"], "w")
+    rescue Exception => ex
+      logger.error "#{ex.message} - couldn't redirect output"
     end
   end
 
