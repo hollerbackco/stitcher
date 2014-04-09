@@ -2,7 +2,7 @@ require 'mina/bundler'
 require 'mina/rails'
 require 'mina/git'
 require 'mina/foreman'
-require 'mina/rvm'    # for rvm support. (http://rvm.io)
+require 'mina/rvm' # for rvm support. (http://rvm.io)
 
 # Basic settings:
 #   domain       - The hostname to SSH to.
@@ -14,19 +14,21 @@ set :application, 'app'
 set :user, 'ubuntu'
 set :deploy_to, '/home/ubuntu/stitcher-service'
 set :repository, 'git@github.com:hollerbackco/hollerback-stitcher.git'
-set :branch, 'dev'
+set :branch, 'master'
 set :forward_agent, true
 set :rvm_path, '/usr/local/rvm/scripts/rvm'
 
 case ENV['to']
-when 'staging'
-  set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
-  set :service_name, "stitcher_dev=1"
-  set :service_env, "development"
-else
-  set :domain, "ec2-54-224-250-6.compute-1.amazonaws.com"
-  set :service_name, "stitcher=1"
-  set :service_env, "production"
+  when 'staging'
+    set :domain, "ec2-54-242-215-39.compute-1.amazonaws.com"
+    set :service_name, "stitcher_dev=1"
+    set :service_env, "development"
+  when 'production'
+    set :domain, "ec2-54-224-250-6.compute-1.amazonaws.com"
+    set :service_name, "stitcher=1"
+    set :service_env, "production"
+  else
+    raise "What environment are you trying to deploy to?"
 end
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
@@ -45,8 +47,8 @@ task :environment do
   # invoke :'rbenv:load'
 
   # For those using RVM, use this to load an RVM version@gemset.
-   invoke :'rvm:use[ruby-2.0.0@default]'
-   #queue %[SERVICE_ENV="#{service_env}"]
+  invoke :'rvm:use[ruby-2.0.0@default]'
+  #queue %[SERVICE_ENV="#{service_env}"]
 end
 
 # Put any custom mkdir's in here for when `mina setup` is ran.
