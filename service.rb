@@ -2,8 +2,10 @@ require 'bundler'
 require 'dotenv'
 Bundler.require
 
-ENV['LOG_FILE']='/var/log/app/stitcher.log'
 Dotenv.load('./local.env') if File.exist?('./local.env')
+unless ENV['LOG_FILE']
+  ENV['LOG_FILE']='/var/log/app/stitcher.log'
+end
 
 require './lib/stitcher_service'
 

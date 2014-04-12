@@ -42,7 +42,7 @@ module StitcherService
 
   def self.create_logger
     #logger = Syslog::Logger.new("stitcher")
-    logger = Logger.new(ENV['LOG_FILE'], 30, 'daily') #keep the logs for thirty days
+    logger = Logger.new(ENV['LOG_FILE']) #keep the logs for thirty days
     # logger = Logger.new(STDOUT)
     logger.level = Logger::INFO
     logger.formatter = ::StitcherService::Pretty.new
