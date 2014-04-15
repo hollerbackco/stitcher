@@ -63,21 +63,21 @@ class Movie
     raise "no valid files in the stitch request" if mpgs.empty?
 
     # build concatenate command                                                                                                                                                                 o
-    command = "cat "
+    command = "echo '#file concat' > #{inter_file};"
     mpgs.each do |movie|
-      command << "#{movie.path} "
+      command << "echo \"file '#{movie.path}'\" >> #{inter_file};"
     end
-    command << " > #{inter_file}"
+    # command << " > #{inter_file}"
     logger.info "concatenate file: #{command}"
 
     Movie.execute_process(command, end_time - Time.now)
 
     # create the final file
-    command = "ffmpeg -i #{inter_file}"
+    command = ""
     #if rotation
     #command << " -metadata:s:v:0 rotate=#{rotation}"
     #end
-    command << " -preset veryfast -qscale:v 4 #{output_file}"
+    command << "ffmpeg -f concat -i #{inter_file} -c copy #{output_file}"
     Movie.execute_process(command, end_time - Time.now)
 
     if (ENV["SERVICE_ENV"] != 'local')
@@ -95,9 +95,9 @@ class Movie
     @path = filepath
   end
 
-  def mpgify(timeout)
-    new_filepath = "#{self.path}.mpg"
-    mpg_command = "ffmpeg -i #{self.path} -y -qscale:v 1 -r 24 "
+  def mpgify(timeout) #todo check and make sure that this is ok
+    new_filepath = "#{self.path}.mp4"
+    mpg_command = "ffmpeg -i #{self.path} -preset veryfast -y -qscale:v 4 -r 24 "
     if transpose
       mpg_command << "-vf \"transpose=#{transpose}\" "
     end
